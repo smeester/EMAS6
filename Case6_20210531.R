@@ -22,7 +22,7 @@ library(DiagrammeR)
 
 
 #read data
-file_location <- "/home/smeester/Documents/AGAI/EMAS10/Case 6/Data aanlevering/emas_dataset.csv" 
+file_location <- 'C:/Users/smeester/Documents/AGAI/EMAS10/Case 6/Data aanlevering/emas_dataset.csv'
 data <- fread(file_location,
               select=c("POOL_ID","LOAN_ID","ACT_PERIOD","CHANNEL","SELLER","SERVICER","MASTER_SERVICER",
                         "ORIG_RATE","CURR_RATE","ORIG_UPB","ISSUANCE_UPB","CURRENT_UPB","ORIG_TERM","ORIG_DATE",
