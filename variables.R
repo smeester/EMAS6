@@ -18,9 +18,65 @@ field_names_analysis <- c("POOL_ID","LOAN_ID","ACT_PERIOD","CHANNEL","SELLER","S
                  "MARGIN","BALLOON_INDICATOR","PLAN_NUMBER","FORBEARANCE_INDICATOR",
                  "HIGH_LOAN_TO_VALUE_HLTV_REFINANCE_OPTION_INDICATOR","DEAL_NAME","RE_PROCS_FLAG")
 
-field_names_lgd <- c()
-
-
+# Dit zijn kolomnamen die niet leeg zijn
+field_names_lgd <- c("LOAN_ID", 
+    "ACT_PERIOD", 
+    "ORIG_RATE", 
+    "CURR_RATE", 
+    "ORIG_UPB", 
+    "CURRENT_UPB", 
+    "ORIG_TERM", 
+    "ORIG_DATE", 
+    "LOAN_AGE", 
+    "FIRST_PAY", 
+    "REM_MONTHS", 
+    "ADJ_REM_MONTHS", 
+    "MATR_DT", 
+    "OLTV", 
+    "OCLTV", 
+    "NUM_BO", 
+    "DTI", 
+    "CSCORE_B", 
+    "CSCORE_C", 
+    "FIRST_FLAG", 
+    "PROP", 
+    "MI_PCT", 
+    "PRODUCT", 
+    "IO", 
+    "DLQ_STATUS", 
+    "PMT_HISTORY", 
+    "MOD_FLAG", 
+    "Zero_Bal_Code", 
+    "ZB_DTE", 
+    "LAST_UPB", 
+    "TOT_SCHD_PRNCPL", 
+    "LAST_PAID_INSTALLMENT_DATE", 
+    "FORECLOSURE_DATE", 
+    "DISPOSITION_DATE", 
+    "FORECLOSURE_COSTS", 
+    "PROPERTY_PRESERVATION_AND_REPAIR_COSTS", 
+    "ASSET_RECOVERY_COSTS", 
+    "MISCELLANEOUS_HOLDING_EXPENSES_AND_CREDITS", 
+    "ASSOCIATED_TAXES_FOR_HOLDING_PROPERTY", 
+    "NET_SALES_PROCEEDS", 
+    "CREDIT_ENHANCEMENT_PROCEEDS", 
+    "REPURCHASES_MAKE_WHOLE_PROCEEDS", 
+    "OTHER_FORECLOSURE_PROCEEDS", 
+    "NON_INTEREST_BEARING_UPB", 
+    "PRINCIPAL_FORGIVENESS_AMOUNT", 
+    "MI_TYPE", 
+    "SERV_IND", 
+    "HOMEREADY_PROGRAM_INDICATOR", 
+    "FORECLOSURE_PRINCIPAL_WRITE_OFF_AMOUNT", 
+    "RELOCATION_MORTGAGE_INDICATOR", 
+    "PROPERTY_INSPECTION_WAIVER_INDICATOR", 
+    "HIGH_BALANCE_LOAN_INDICATOR", 
+    "FORBEARANCE_INDICATOR", 
+    "HIGH_LOAN_TO_VALUE_HLTV_REFINANCE_OPTION_INDICATOR", 
+    "RE_PROCS_FLAG", 
+    "ADR_TYPE", 
+    "ADR_COUNT", 
+    "ADR_UPB")
 
 all_field_names <- c("POOL_ID", 
                      "LOAN_ID", 
@@ -130,3 +186,16 @@ all_field_names <- c("POOL_ID",
                      "ADR_TYPE", 
                      "ADR_COUNT", 
                      "ADR_UPB")
+
+convertToDate <- function(x){
+  year <- x %% 10000
+  month <- (x - year)/ 10000
+  mat <- cbind(year, month)
+  
+  date_strings <- apply(mat, 1, function(x){
+    paste(x[1], x[2], 1, sep = "-")
+  })
+  ret_value <- reduce(c, lapply(date_strings, function(x){as.Date(x, "%Y-%m-%d")}))
+  return(ret_value)
+  }
+
