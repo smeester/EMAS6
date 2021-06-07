@@ -46,19 +46,19 @@ gc()
 
 data$ACT_PERIOD <- my(data$ACT_PERIOD)
 data$ORIG_DATE <- my(data$ORIG_DATE)
-
+data$FIRST_PAY <- my(data$FIRST_PAY)
+data$MATR_DT <- my(data$MATR_DT)
+data$ZB_DTE <- my(data$ZB_DTE)
+data$LAST_PAID_INSTALLMENT_DATE <- my(data$LAST_PAID_INSTALLMENT_DATE)
+data$FORECLOSURE_DATE <- my(data$FORECLOSURE_DATE)
+data$DISPOSITION_DATE <- my(data$DISPOSITION_DATE)
+gc()
 # Converteer alle datums naar van format m(m)yyyy naar een datum. 
 # functie my() converteert dit automatisch  
 
 data_list <- split(data, f = data$LOAN_ID)
 #data <- NULL
-data_list <- lapply(data_list, function(x){
-  x$ACT_PERIOD <- my(x$ACT_PERIOD)
-  x$ORIG_DATE <- my(x$ORIG_DATE)
-  x$FIRST_PAY <- my(x$FIRST_PAY)
-  x$MATR_DT <- my(x$MATR_DT)
-  return(x)
-})
+gc()
 
 
 
