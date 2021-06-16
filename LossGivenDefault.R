@@ -42,6 +42,7 @@ data$ADR_TYPE[data$ADR_TYPE=="7.0"] <- "7"
 data$FORBEARANCE_INDICATOR[data$FORBEARANCE_INDICATOR == "7.0"] <- "7"
 data$Zero_Bal_Code[is.na(data$Zero_Bal_Code)] <- 0
 
+# Zet alle kosten die NA zijn naar 0
 data$FORECLOSURE_COSTS[is.na(data$FORECLOSURE_COSTS)] <- 0
 data$PROPERTY_PRESERVATION_AND_REPAIR_COSTS[is.na(data$PROPERTY_PRESERVATION_AND_REPAIR_COSTS)] <- 0
 data$ASSET_RECOVERY_COSTS [is.na(data$ASSET_RECOVERY_COSTS)] <- 0
@@ -88,6 +89,7 @@ hpi$PERIOD <- ym(hpi$PERIOD)
 data$ANNUITY <- with(data, (1-(1/(1+ORIG_RATE/1200)^ORIG_TERM))/(ORIG_RATE/1200))
 data$MONTHLY_PAYMENT <- with(data, ORIG_UPB/ANNUITY)
 data$DLQ_TOTAL <- with(data, MONTHLY_PAYMENT * DLQ_STATUS )
+data$COVID <- as.numeric(data$ADR_TYPE == "C")
 
 data <- merge(data, hpi, by.x='ORIG_DATE', by.y='PERIOD')
 data <- merge(data, hpi, by.x='ACT_PERIOD', by.y='PERIOD')
