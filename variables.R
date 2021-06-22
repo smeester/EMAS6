@@ -206,3 +206,73 @@ all_field_names <- c("POOL_ID",
                      "ADR_TYPE", 
                      "ADR_COUNT", 
                      "ADR_UPB")
+
+create_default_graph <- function(df_input){
+  df <- df_input
+  df$STATUS[df$DEFAULT_FLAG == 1] <-  "Default" 
+  df$STATUS[df$OUT_DEFAULT == 1] <- "Recovered" 
+  df$STATUS[df$FORECLOSURE_INDICATOR == 1] <- "Foreclosed"
+  df$STATUS[df$OUT_DEFAULT == 1 && df$Zero_Bal_Code != 1] <- "Sold"
+  #df$COVID == 1 & df$STATUS == "Default"
+  df$STATUS[df$COVID == 1 & df$STATUS == "Default" & df$ACT_PERIOD >= dmy("01-01-2019")] <- "Covid Default"
+  df$STATUS[df$COVID == 1 & df$STATUS == "Recovered"] <- "Covid Recovered"
+  
+  sub_select <- df %>% filter(!is.na(STATUS)) %>% 
+    group_by(ACT_PERIOD,  STATUS) %>% select(ACT_PERIOD, STATUS) %>% 
+    summarise(n())
+  
+  colnames(sub_select) <- c("Date","Status", "Number")
+  sub_select$Status <- factor(sub_select$Status, levels = c(  "Covid Recovered", "Recovered", "Foreclosed", "Covid Default", "Default" ))
+  sub_select$Number[sub_select$Status %in% c("Foreclosed", "Recovered", "Covid Recovered")] <- -1 * sub_select$Number[sub_select$Status %in% c("Foreclosed", "Recovered", "Covid Recovered")] 
+  
+  ggplot(sub_select, aes(x = Date, y = Number, fill = Status)) +
+    geom_bar(stat="identity") + 
+    #scale_fill_manual(values = c("#56B4E9", "#009E73", "#D55E00", "#CC79A7", "#E69F00"))+
+    scale_fill_grey() + 
+    ggtitle("Mortgage Default, recoveries and foreclosures over time")
+  
+}
+
+create_pie_chart_fc <- function(df_input){
+  df <- df_input
+  df[df$Zero_Bal_Code == 1 , ]$ADR_TYPE <- "P"
+  df[df$ADR_TYPE == "" , ]$ADR_TYPE <- "9"
+  
+  # Maak dataframe voor aantal foreclosure vs niet foreclosed
+  df_fc_summary <- df %>% filter(OUT_DEFAULT == 1) %>% 
+    select(FORECLOSURE_INDICATOR) %>%
+    group_by(FORECLOSURE_INDICATOR) %>% summarise(n())
+  colnames(df_fc_summary) <- c("category", "number")
+  df_fc_summary$category[df_fc_summary$category == 0] <- "not foreclosed"
+  df_fc_summary$category[df_fc_summary$category == 1] <- "foreclosed"
+  df_fc_summary$number <- round((df_fc_summary$number / sum(df_fc_summary$number))*100, 1)
+  
+  ggplot(df_fc_summary, aes(x="", y=number, fill=category)) +
+    geom_bar(stat="identity", width=1) +
+    coord_polar("y", start=0) +
+    scale_fill_grey() + 
+    geom_text(aes(label = paste0(number, "%")), 
+              position = position_stack(vjust=0.5),
+              colour="#FFFFFF") + 
+    theme(axis.title.x=element_blank(), axis.title.y=element_blank())+
+    ggtitle("Percentage of foreclosure vs recoveries")
+}
+
+
+create_hist_length_default <- function(df_input){
+  df <- df_input
+  moments_out_default <- df %>% filter(OUT_DEFAULT == 1) 
+  summary <- moments_out_default %>% group_by(LENGTH_IN_DEFAULT, FORECLOSURE_INDICATOR) %>% 
+    summarise(n())
+  
+  colnames(summary) <- c("Length", "Foreclosed", "Number")
+  summary$Foreclosed[summary$Foreclosed == 1] <- "Foreclosed"
+  summary$Foreclosed[summary$Foreclosed == 0] <- "Not Foreclosed"
+  
+  ggplot(summary, aes(x = Length, y = Number, fill = Foreclosed)) +
+    geom_bar(stat="identity") +
+    scale_fill_grey() + 
+    scale_y_continuous(limits = c(0, 500)) + 
+    xlab("Months in default") +
+    ggtitle("Amount of time in months a defaulted mortgage is in default")
+}
