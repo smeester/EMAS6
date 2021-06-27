@@ -193,7 +193,9 @@ gc()
 rfr <- 0.24688
 discount <- (rfr + 5)/1200 #5 = discount rate, 1200 = monthly
 
-loans %>% group_by(OUT_DEFAULT , FORECLOSURE_INDICATOR) %>% summarise(n())
+samenvatting <- loans %>% group_by(OUT_DEFAULT , FORECLOSURE_INDICATOR) %>% 
+  distinct(LOAN_ID) %>%
+  summarise(n())
 
 loans$LOSS <- 0
 df_results <- loans %>% filter(OUT_DEFAULT ==1 | FORECLOSURE_INDICATOR == 1) %>%
@@ -289,7 +291,6 @@ loans_out_of_default_no_corona <- loans_out_of_default %>% filter(COVID != 1)
 
 create_hist_length_default(loans_out_of_default)
 create_hist_length_default(loans_out_of_default_no_corona)
-
 
 
 
