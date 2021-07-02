@@ -292,5 +292,17 @@ loans_out_of_default_no_corona <- loans_out_of_default %>% filter(COVID != 1)
 create_hist_length_default(loans_out_of_default)
 create_hist_length_default(loans_out_of_default_no_corona)
 
+loans_moment_ood = loans_out_of_default[ids_out_of_default]
+loans_moment_ood$RESULT <- loans_moment_ood$PROCEEDS - loans_moment_ood$COSTS_TOTAL
+loans_moment_ood$REMAINDER <- loans_moment_ood$LAST_UPB - loans_moment_ood$RESULT
+loans_moment_ood$REMAINDER[loans_moment_ood$FORECLOSURE_INDICATOR != 1] <- 0
+loans_moment_ood$REMAINDER[is.na(loans_moment_ood$REMAINDER)] <- 0
+loans_moment_ood$REMAINDER[loans_moment_ood$REMAINDER < 0] <- 0
+loans_moment_ood$LAST_UPB[is.na(loans_moment_ood$LAST_UPB)] <- 0
+hist(loans_moment_ood$REMAINDER)
+loans_moment_ood$LOSS_RATIO <- loans_moment_ood$REMAINDER / loans_moment_ood$LAST_UPB
+loans_moment_ood$LOSS_RATIO[is.na(loans_moment_ood$LOSS_RATIO)] <- 0
 
+hist(loans_moment_ood$LOSS_RATIO)
+mean(loans_moment_ood$LOSS_RATIO)
 
